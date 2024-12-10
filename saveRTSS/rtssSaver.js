@@ -1,12 +1,12 @@
 getByid("writeRTSS").addEventListener('click', () => {
     getByid("saveRTSS").onclick = function () {
         let buffer = getRtssDicomInstance();
-    
+
         let a = document.createElement("a");
         let file = new Blob([buffer], {
             type: "application/dicom"
         });
-    
+
         a.href = window.URL.createObjectURL(file);
         a.download = "RTSS.dcm";
         a.click();
@@ -59,7 +59,6 @@ function getRtssDicomInstance() {
         StructureSetTime: viewportInstanceTags.StudyTime,
         ReferencedStudySequence: [],
         ReferencedFrameOfReferenceSequence: {
-            FrameOfReferenceUID: "1.2.840.113619.2.222.3596.375084.15213.1536104832.466",
             RTReferencedStudySequence:
                 [
                     {
@@ -75,13 +74,7 @@ function getRtssDicomInstance() {
                 ]
         },
         StructureSetROISequence: [],
-        ROIContourSequence: [
-            {
-                ROIDisplayColor: undefined,
-                ContourSequence: [],
-                ReferencedROINumber: 1
-            }
-        ],
+        ROIContourSequence: [],
         RTROIObservationsSequence: [
             {
                 ObservationNumber: getByid("textObservationNumber").value,
@@ -96,7 +89,7 @@ function getRtssDicomInstance() {
         let instance = instances[i];
         let sopClassUID = instance.dataSet.string("x00080016");
         dataset.ReferencedFrameOfReferenceSequence.RTReferencedStudySequence[0].RTReferencedSeriesSequence[0].ContourImageSequence.push({
-            ReferencedSOPClassUID: sopClassUID, 
+            ReferencedSOPClassUID: sopClassUID,
             ReferencedSOPInstanceUID: instance.SOPInstanceUID,
         });
 
@@ -110,8 +103,14 @@ function getRtssDicomInstance() {
         let curMark = PatientMark[y];
         let roiNumber = 1;
         if (curMark.series === viewport.series && curMark.type === "RTSS") {
+            let roiContourSeqObj = {
+                ROIDisplayColor: undefined,
+                ContourSequence: [],
+                ReferencedROINumber: roiNumber
+            }
+
             let roiSeqObj = {
-                ROINumber: roiNumber++,
+                ROINumber: 1,
                 ReferencedFrameOfReferenceUID: "0",
                 ROIName: curMark.showName,
                 ROIGenerationAlgorithm: "MANUAL"
@@ -150,21 +149,17 @@ function getRtssDicomInstance() {
             contourSeqObj.ContourImageSequence[0].ReferencedSOPClassUID = curInstance.dataSet.string("x00080016");
             contourSeqObj.ContourImageSequence[0].ReferencedSOPInstanceUID = curMark.sop;
 
-            // let contourColor = getColorFromRGB(curMark.color);
-            // dataset.ROIContourSequence[0].ROIDisplayColor = "" + contourColor[0] + "\\" + contourColor[1] + "\\" + contourColor[2];
-            dataset.ROIContourSequence[0].ContourSequence.push(contourSeqObj);
+            let contourColor = getColorFromRGB(curMark.color);
+            roiContourSeqObj.ROIDisplayColor = "" + contourColor[0] + "\\" + contourColor[1] + "\\" + contourColor[2];
+            roiContourSeqObj.ContourSequence.push(contourSeqObj);
+
+            dataset.ROIContourSequence.push(roiContourSeqObj);
+
+            roiNumber++;
         }
     }
 
     dataset._meta["MediaStorageSOPInstanceUID"] = generatedSopInstanceUid;
-
-    let color = [0, 0, 128];
-    for (let o = 0; o < getClass("RTSSColorSelectOption").length; o++) {
-        if (getClass("RTSSColorSelectOption")[o].selected == true) {
-            color = getColorFromRGB(getClass("RTSSColorSelectOption")[o].style.color);
-        }
-    }
-    dataset.ROIContourSequence[0].ROIDisplayColor = "" + color[0] + "\\" + color[1] + "\\" + color[2];
 
     const denaturalizedMetaHeader = dcmjs.data.DicomMetaDictionary.denaturalizeDataset(dataset._meta);
     const dicomDict = new dcmjs.data.DicomDict(denaturalizedMetaHeader);
