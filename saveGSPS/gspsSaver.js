@@ -1,7 +1,6 @@
 getByid("writeGSPS").addEventListener('click', () => {
-    getByid("saveGSPS").addEventListener('click', () => {
+    getByid("saveGSPS").onclick = function () {
         let buffer = getGspsDicomInstance();
-        console.log(buffer);
 
         let a = document.createElement("a");
         let file = new Blob([buffer], {
@@ -11,7 +10,7 @@ getByid("writeGSPS").addEventListener('click', () => {
         a.href = window.URL.createObjectURL(file);
         a.download = "GSPS.dcm";
         a.click();
-    });
+    };
 });
 
 function getFormattedDateTime() {
