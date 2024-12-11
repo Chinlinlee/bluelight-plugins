@@ -99,14 +99,14 @@ function getSegDicomInstance() {
         DimensionIndexSequence: [
             {
                 DimensionOrganizationUID: "2.25.521890920689168201386532254542531936629",
-                DimensionIndexPointer: "(0062,000b)",
-                FunctionalGroupPointer: "(0062,000a)",
+                DimensionIndexPointer: 0x0062000b,
+                FunctionalGroupPointer: 0x0062000a,
                 DimensionDescriptionLabel: "ReferencedSegmentNumber",
             },
             {
                 DimensionOrganizationUID: "2.25.521890920689168201386532254542531936629",
-                DimensionIndexPointer: "(0020,0032)",
-                FunctionalGroupPointer: "(0020,9113)",
+                DimensionIndexPointer: 0x00200032,
+                FunctionalGroupPointer: 0x00209113,
                 DimensionDescriptionLabel: "ImagePositionPatient",
             }
         ],
@@ -115,12 +115,12 @@ function getSegDicomInstance() {
         NumberOfFrames: undefined,
         Rows: dicomParserDataset.int16("x00280010"),
         Columns: dicomParserDataset.int16("x00280011"),
-        BitsAllocated: 8,
-        BitsStored: 8,
-        HighBit: 7,
+        BitsAllocated: 1,
+        BitsStored: 1,
+        HighBit: 0,
         PixelRepresentation: dicomParserDataset.string("x00280103"),
         LossyImageCompression: dicomParserDataset.string("x00282110"),
-        SegmentationType: "FRACTIONAL",
+        SegmentationType: "BINARY",
         SegmentSequence: {
             SegmentedPropertyCategoryCodeSequence: {
                 CodeValue: "T-D0050",
@@ -142,8 +142,6 @@ function getSegDicomInstance() {
                 CodeMeaning: "Tissue"
             }
         },
-        MaximumFractionalValue: 255,
-        SegmentationFractionalType: "PROBABILITY",
         ContentLabel: "BlueLight",
         ContentDescription: "BlueLight",
         SharedFunctionalGroupsSequence: {
