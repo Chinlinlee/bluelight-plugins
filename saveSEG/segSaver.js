@@ -1,5 +1,5 @@
 getByid("writeSEG").addEventListener("click", function () {
-    getByid("saveSEG").addEventListener("click", function () {
+    getByid("saveSEG").onclick = function () {
         let buffer = getSegDicomInstance();
         if (!buffer) return;
 
@@ -11,7 +11,7 @@ getByid("writeSEG").addEventListener("click", function () {
         a.href = window.URL.createObjectURL(file);
         a.download = "SEG.dcm";
         a.click();
-    });
+    };
 });
 
 function getFormattedDateTime() {
